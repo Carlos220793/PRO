@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Sistema de Mantenimiento</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- VIDEO SOLO EN LOGIN -->
+  <video id="video-fondo" autoplay muted loop>
+    <source src="VIDEO/VIDEO-MP4.mp4" type="video/mp4">
+    Tu navegador no soporta video.
+  </video>
+
+  <!-- LOGIN -->
+  <section id="login">
+    <h2>Iniciar Sesión</h2>
+    <form id="login-form">
+      <input type="text" id="usuario" placeholder="Usuario" required>
+      <input type="password" id="clave" placeholder="Contraseña" required>
+      <button type="submit">Entrar</button>
+      <p id="error-login"></p>
+    </form>
+  </section>
+
+  <!-- APP -->
+  <main id="app" class="oculto">
+    <nav class="menu">
+      <button id="btn-registrar">Registrar</button>
+      <button id="btn-buscar">Buscar</button>
+    </nav>
+
+    <!-- REGISTRO -->
+    <section id="registrar">
+      <h2>Registrar Mantenimiento</h2>
+      <div class="resumen">
+        <div class="card">Total: <b id="total">0</b></div>
+        <div class="card">Pendientes: <b id="pendientes">0</b></div>
+        <div class="card">En progreso: <b id="en-progreso">0</b></div>
+        <div class="card">Finalizados: <b id="finalizados">0</b></div>
+      </div>
+      <form id="form-registro" class="form-horizontal">
+        <input type="text" id="tipo" placeholder="Tipo de equipo" required>
+        <input type="text" id="placa" placeholder="Placa" required>
+        <input type="text" id="marca" placeholder="Marca / Modelo" required>
+        <input type="text" id="serial" placeholder="Serial" required>
+        <input type="date" id="fecha" required>
+        <input type="text" id="tecnico" placeholder="Técnico" required>
+        <select id="tipo-mantenimiento" required>
+          <option value="">Tipo de mantenimiento</option>
+          <option value="Preventivo">Preventivo</option>
+          <option value="Correctivo">Correctivo</option>
+        </select>
+        <select id="estado" required>
+          <option value="">Estado</option>
+          <option value="Pendiente">Pendiente</option>
+          <option value="En progreso">En progreso</option>
+          <option value="Finalizado">Finalizado</option>
+        </select>
+        <input type="text" id="ubicacion" placeholder="Ubicación" required>
+        <input type="text" id="centro-costo" placeholder="Centro de costo" required>
+        <input type="url" id="url-ticket" placeholder="URL del ticket">
+        <textarea id="observaciones" placeholder="Observaciones..."></textarea>
+        <button type="submit">Guardar</button>
+      </form>
+      <ul id="lista"></ul>
+    </section>
+
+    <!-- BÚSQUEDA -->
+    <section id="buscar" class="oculto">
+      <h2>Buscar Mantenimientos</h2>
+      <input type="text" id="buscar-input" placeholder="Buscar...">
+      <button id="exportar-excel">Exportar a Excel</button>
+      <div class="filtro-fechas">
+        <label>Desde: <input type="date" id="filtro-desde"></label>
+        <label>Hasta: <input type="date" id="filtro-hasta"></label>
+        <button id="filtrar-fechas">Filtrar</button>
+      </div>
+      <ul id="resultados"></ul>
+    </section>
+  </main>
+
+  <!-- MODAL EDICIÓN -->
+  <div id="modal-edicion" class="modal oculto">
+    <div class="modal-contenido">
+      <span id="cerrar-modal" class="cerrar">&times;</span>
+      <h3>Editar Mantenimiento</h3>
+      <form id="form-edicion">
+        <input type="text" id="edit-tipo" required>
+        <input type="text" id="edit-placa" required>
+        <input type="text" id="edit-marca" required>
+        <input type="text" id="edit-serial" required>
+        <input type="date" id="edit-fecha" required>
+        <input type="text" id="edit-tecnico" required>
+        <select id="edit-tipo-mantenimiento" required>
+          <option value="Preventivo">Preventivo</option>
+          <option value="Correctivo">Correctivo</option>
+        </select>
+        <select id="edit-estado" required>
+          <option value="Pendiente">Pendiente</option>
+          <option value="En progreso">En progreso</option>
+          <option value="Finalizado">Finalizado</option>
+        </select>
+        <input type="text" id="edit-ubicacion" required>
+        <input type="text" id="edit-centro-costo" required>
+        <input type="url" id="edit-url-ticket">
+        <textarea id="edit-observaciones"></textarea>
+        <input type="hidden" id="edit-indice">
+        <button type="submit">Guardar Cambios</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL HISTORIAL -->
+  <div id="modal-historial" class="modal oculto">
+    <div class="modal-contenido">
+      <span id="cerrar-historial" class="cerrar">&times;</span>
+      <h3>Historial del Mantenimiento</h3>
+      <ul id="historial-lista"></ul>
+    </div>
+  </div>
+
+  <!-- LIBRERÍA Y SCRIPT -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
