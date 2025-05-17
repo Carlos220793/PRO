@@ -1,0 +1,1310 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Mantenimiento - IT Solutions</title>
+  <style>
+    /* Reset y estilos generales */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body, html {
+      height: 100%;
+      width: 100%;
+      overflow-x: hidden;
+    }
+
+    /* Video de fondo solo para el login */
+    #video-fondo {
+      position: fixed;
+      top: 0;
+      left: 0;
+      min-width: 100%;
+      min-height: 100%;
+      object-fit: cover;
+      z-index: -1;
+      display: none;
+    }
+
+    /* Estilos para el login */
+    .login-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .login-box {
+      background: rgba(255, 255, 255, 0.85);
+      padding: 2.5rem;
+      border-radius: 10px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+      backdrop-filter: blur(5px);
+    }
+
+    .login-box h2 {
+      color: #2a5298;
+      margin-bottom: 1.5rem;
+      font-weight: 600;
+    }
+
+    .login-box input {
+      width: 100%;
+      padding: 12px 15px;
+      margin-bottom: 1rem;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 14px;
+      transition: border 0.3s;
+      background: rgba(255, 255, 255, 0.8);
+    }
+
+    .login-box input:focus {
+      border-color: #2a5298;
+      outline: none;
+    }
+
+    .login-box button {
+      width: 100%;
+      padding: 12px;
+      background-color: #2a5298;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .login-box button:hover {
+      background-color: #1e3c72;
+    }
+
+    #error-login {
+      color: #e74c3c;
+      margin-top: 1rem;
+      font-size: 14px;
+      min-height: 20px;
+    }
+
+    /* Estilos para la aplicación */
+    #app {
+      display: none;
+      padding: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+      min-height: 100vh;
+      background: #f5f7fa;
+    }
+
+    /* Barra de navegación */
+    .app-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .app-title h1 {
+      color: #2a5298;
+      font-size: 1.8rem;
+    }
+
+    .app-title p {
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    .nav-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .nav-buttons button {
+      padding: 8px 16px;
+      background-color: #2a5298;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .nav-buttons button:hover {
+      background-color: #1e3c72;
+    }
+
+    .logout-btn {
+      background-color: #e74c3c !important;
+    }
+
+    .logout-btn:hover {
+      background-color: #c0392b !important;
+    }
+
+    /* Resumen de estadísticas */
+    .stats-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      text-align: center;
+      transition: transform 0.3s;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-card h3 {
+      color: #666;
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-card p {
+      color: #2a5298;
+      font-size: 1.8rem;
+      font-weight: 600;
+    }
+
+    /* Formulario de registro */
+    #registrar {
+      background: white;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      margin-bottom: 2rem;
+    }
+
+    #registrar h2 {
+      color: #2a5298;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid #eee;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 15px;
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #555;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 14px;
+      transition: border 0.3s;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: #2a5298;
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(42, 82, 152, 0.1);
+    }
+
+    .form-group textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .form-actions {
+      text-align: right;
+      margin-top: 1rem;
+    }
+
+    .form-actions button {
+      padding: 10px 20px;
+      background-color: #2a5298;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      font-weight: 500;
+    }
+
+    .form-actions button:hover {
+      background-color: #1e3c72;
+    }
+
+    /* Lista de registros */
+    #lista {
+      list-style: none;
+    }
+
+    .registro-item {
+      background: white;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .registro-item:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .registro-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #eee;
+    }
+
+    .registro-title {
+      font-weight: 600;
+      color: #2a5298;
+      font-size: 1.1rem;
+    }
+
+    .registro-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .registro-actions button {
+      padding: 5px 10px;
+      font-size: 0.8rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: opacity 0.3s;
+    }
+
+    .registro-actions button:hover {
+      opacity: 0.9;
+    }
+
+    .edit-btn {
+      background-color: #3498db;
+      color: white;
+    }
+
+    .delete-btn {
+      background-color: #e74c3c;
+      color: white;
+    }
+
+    .registro-details {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 15px;
+    }
+
+    .detail-item {
+      margin-bottom: 0.5rem;
+    }
+
+    .detail-label {
+      font-size: 0.8rem;
+      color: #777;
+      font-weight: 500;
+    }
+
+    .detail-value {
+      font-size: 0.9rem;
+      color: #333;
+      word-break: break-word;
+    }
+
+    /* Sección de búsqueda */
+    #buscar {
+      display: none;
+      background: white;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    #buscar h2 {
+      color: #2a5298;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid #eee;
+    }
+
+    .search-controls {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .search-controls input {
+      flex: 1;
+      min-width: 200px;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+
+    .search-controls button {
+      padding: 10px 20px;
+      background-color: #2a5298;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    .search-controls button:hover {
+      background-color: #1e3c72;
+    }
+
+    .date-filters {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 1.5rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .date-filters label {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.9rem;
+      color: #555;
+    }
+
+    .date-filters input {
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+
+    /* Modales */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+
+    .modal.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 2rem;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 600px;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .close-modal {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #777;
+      transition: color 0.3s;
+    }
+
+    .close-modal:hover {
+      color: #333;
+    }
+
+    /* Estado de los registros */
+    .status-badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    .status-pendiente {
+      background-color: #f39c12;
+      color: white;
+    }
+
+    .status-progreso {
+      background-color: #3498db;
+      color: white;
+    }
+
+    .status-finalizado {
+      background-color: #2ecc71;
+      color: white;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .login-box {
+        padding: 1.5rem;
+        margin: 0 15px;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .registro-details {
+        grid-template-columns: 1fr;
+      }
+
+      .stats-container {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .app-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+      }
+
+      .nav-buttons {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .modal-content {
+        padding: 1.5rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .login-box {
+        padding: 1.2rem;
+      }
+
+      .stats-container {
+        grid-template-columns: 1fr;
+      }
+
+      .date-filters {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+  <!-- Video de fondo solo en login -->
+  <video id="video-fondo" autoplay muted loop>
+    <source src="VIDEO/VIDEO-MP4.mp4" type="video/mp4">
+    Tu navegador no soporta video.
+  </video>
+
+  <!-- Pantalla de Login -->
+  <div class="login-container" id="login">
+    <div class="login-box">
+      <h2>Sistema de Mantenimiento</h2>
+      <p style="margin-bottom: 1.5rem; color: #666;">Ingrese sus credenciales para acceder</p>
+      <form id="login-form">
+        <input type="text" id="usuario" placeholder="Usuario" required>
+        <input type="password" id="clave" placeholder="Contraseña" required>
+        <button type="submit">Iniciar Sesión</button>
+        <p id="error-login"></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- Aplicación principal -->
+  <div id="app">
+    <header class="app-header">
+      <div class="app-title">
+        <h1>Sistema de Mantenimiento</h1>
+        <p>Registro de equipos informáticos</p>
+      </div>
+      <div class="nav-buttons">
+        <button id="btn-registrar">Nuevo Registro</button>
+        <button id="btn-buscar">Buscar</button>
+        <button id="btn-logout" class="logout-btn">Cerrar Sesión</button>
+      </div>
+    </header>
+
+    <!-- Resumen de estadísticas -->
+    <div class="stats-container">
+      <div class="stat-card">
+        <h3>Total Registros</h3>
+        <p id="total">0</p>
+      </div>
+      <div class="stat-card">
+        <h3>Pendientes</h3>
+        <p id="pendientes">0</p>
+      </div>
+      <div class="stat-card">
+        <h3>En Progreso</h3>
+        <p id="en-progreso">0</p>
+      </div>
+      <div class="stat-card">
+        <h3>Finalizados</h3>
+        <p id="finalizados">0</p>
+      </div>
+    </div>
+
+    <!-- Sección de Registro -->
+    <section id="registrar">
+      <h2>Registrar Nuevo Mantenimiento</h2>
+      <form id="form-registro">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="tipo">Tipo de Equipo</label>
+            <input type="text" id="tipo" required>
+          </div>
+          <div class="form-group">
+            <label for="placa">Placa/Identificación</label>
+            <input type="text" id="placa" required>
+          </div>
+          <div class="form-group">
+            <label for="marca">Marca/Modelo</label>
+            <input type="text" id="marca" required>
+          </div>
+          <div class="form-group">
+            <label for="serial">Número de Serie</label>
+            <input type="text" id="serial" required>
+          </div>
+          <div class="form-group">
+            <label for="fecha">Fecha</label>
+            <input type="date" id="fecha" required>
+          </div>
+          <div class="form-group">
+            <label for="tecnico">Técnico Responsable</label>
+            <input type="text" id="tecnico" required>
+          </div>
+          <div class="form-group">
+            <label for="tipo-mantenimiento">Tipo de Mantenimiento</label>
+            <select id="tipo-mantenimiento" required>
+              <option value="">Seleccionar...</option>
+              <option value="Preventivo">Preventivo</option>
+              <option value="Correctivo">Correctivo</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="estado">Estado</label>
+            <select id="estado" required>
+              <option value="">Seleccionar...</option>
+              <option value="Pendiente">Pendiente</option>
+              <option value="En progreso">En progreso</option>
+              <option value="Finalizado">Finalizado</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="ubicacion">Ubicación</label>
+            <input type="text" id="ubicacion" required>
+          </div>
+          <div class="form-group">
+            <label for="centro-costo">Centro de Costo</label>
+            <input type="text" id="centro-costo" required>
+          </div>
+          <div class="form-group">
+            <label for="url-ticket">URL del Ticket (opcional)</label>
+            <input type="url" id="url-ticket">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="observaciones">Observaciones</label>
+          <textarea id="observaciones"></textarea>
+        </div>
+        <div class="form-actions">
+          <button type="submit">Guardar Registro</button>
+        </div>
+      </form>
+
+      <!-- Lista de registros -->
+      <ul id="lista" style="margin-top: 2rem;"></ul>
+    </section>
+
+    <!-- Sección de Búsqueda -->
+    <section id="buscar">
+      <h2>Buscar Mantenimientos</h2>
+      <div class="search-controls">
+        <input type="text" id="buscar-input" placeholder="Buscar por placa, serial o técnico...">
+        <button id="btn-ejecutar-busqueda">Buscar Registro</button>
+        <button id="exportar-excel">Exportar a Excel</button>
+      </div>
+      <div class="date-filters">
+        <label>
+          Desde:
+          <input type="date" id="filtro-desde">
+        </label>
+        <label>
+          Hasta:
+          <input type="date" id="filtro-hasta">
+        </label>
+        <button id="filtrar-fechas">Filtrar</button>
+      </div>
+      <ul id="resultados" style="margin-top: 1.5rem;"></ul>
+    </section>
+  </div>
+
+  <!-- Modal de Edición -->
+  <div class="modal" id="modal-edicion">
+    <div class="modal-content">
+      <span class="close-modal">&times;</span>
+      <h3>Editar Mantenimiento</h3>
+      <form id="form-edicion">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="edit-tipo">Tipo de Equipo</label>
+            <input type="text" id="edit-tipo" required>
+          </div>
+          <div class="form-group">
+            <label for="edit-placa">Placa/Identificación</label>
+            <input type="text" id="edit-placa" required>
+          </div>
+          <div class="form-group">
+            <label for="edit-marca">Marca/Modelo</label>
+            <input type="text" id="edit-marca" required>
+          </div>
+          <div class="form-group">
+            <label for="edit-serial">Número de Serie</label>
+            <input type="text" id="edit-serial" required>
+          </div>
+          <div class="form-group">
+            <label for="edit-fecha">Fecha</label>
+            <input type="date" id="edit-fecha" required>
+          </div>
+          <div class="form-group">
+            <label for="edit-tecnico">Técnico Responsable</label>
+            <input type="text" id="edit-tecnico" required>
+          </div>
+          <div class="form-group">
+            <label for="edit-tipo-mantenimiento">Tipo de Mantenimiento</label>
+            <select id="edit-tipo-mantenimiento" required>
+              <option value="Preventivo">Preventivo</option>
+              <option value="Correctivo">Correctivo</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="edit-estado">Estado</label>
+            <select id="edit-estado" required>
+              <option value="Pendiente">Pendiente</option>
+              <option value="En progreso">En progreso</option>
+              <option value="Finalizado">Finalizado</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="edit-ubicacion">Ubicación</label>
+            <input type="text" id="edit-ubicacion" required>
+          </div>
+          <div class="form-group">
+            <label for="edit-centro-costo">Centro de Costo</label>
+            <input type="text" id="edit-centro-costo" required>
+          </div>
+          <div class="form-group">
+            <label for="edit-url-ticket">URL del Ticket (opcional)</label>
+            <input type="url" id="edit-url-ticket">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="edit-observaciones">Observaciones</label>
+          <textarea id="edit-observaciones"></textarea>
+        </div>
+        <input type="hidden" id="edit-indice">
+        <div class="form-actions">
+          <button type="submit">Guardar Cambios</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Script principal -->
+  <script>
+    // Credenciales de acceso compartidas
+    const CREDENCIALES = {
+      usuario: "Administrador",
+      clave: "sysadm1n"
+    };
+
+    // Variables de estado
+    let registros = JSON.parse(localStorage.getItem('registros_mantenimiento')) || [];
+    let currentSection = 'registrar';
+
+    // Elementos del DOM
+    const loginContainer = document.getElementById('login');
+    const appContainer = document.getElementById('app');
+    const loginForm = document.getElementById('login-form');
+    const errorLogin = document.getElementById('error-login');
+    const btnRegistrar = document.getElementById('btn-registrar');
+    const btnBuscar = document.getElementById('btn-buscar');
+    const btnLogout = document.getElementById('btn-logout');
+    const registrarSection = document.getElementById('registrar');
+    const buscarSection = document.getElementById('buscar');
+    const formRegistro = document.getElementById('form-registro');
+    const listaRegistros = document.getElementById('lista');
+    const buscarInput = document.getElementById('buscar-input');
+    const resultadosBusqueda = document.getElementById('resultados');
+    const exportarExcelBtn = document.getElementById('exportar-excel');
+    const modalEdicion = document.getElementById('modal-edicion');
+    const formEdicion = document.getElementById('form-edicion');
+    const closeModal = document.querySelector('.close-modal');
+    const totalElement = document.getElementById('total');
+    const pendientesElement = document.getElementById('pendientes');
+    const enProgresoElement = document.getElementById('en-progreso');
+    const finalizadosElement = document.getElementById('finalizados');
+    const videoFondo = document.getElementById('video-fondo');
+
+    // Inicialización
+    document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('btn-ejecutar-busqueda').addEventListener('click', () => {
+    buscarRegistros();
+  });
+      // Configurar video de fondo
+      videoFondo.style.display = 'block';
+      
+      // Verificar si ya está logueado
+      const isLoggedIn = localStorage.getItem('isLoggedIn');
+      if (isLoggedIn === 'true') {
+        videoFondo.style.display = 'none';
+        loginContainer.style.display = 'none';
+        appContainer.style.display = 'block';
+        actualizarEstadisticas();
+        renderizarRegistros();
+      }
+
+      // Configurar fecha actual por defecto
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('fecha').value = today;
+      document.getElementById('filtro-desde').value = today;
+      document.getElementById('filtro-hasta').value = today;
+      
+      // Configurar sincronización cada 30 segundos
+      setInterval(sincronizarRegistros, 30000);
+    });
+
+    // Event Listeners
+    loginForm.addEventListener('submit', handleLogin);
+    btnRegistrar.addEventListener('click', () => cambiarSeccion('registrar'));
+    btnBuscar.addEventListener('click', () => cambiarSeccion('buscar'));
+    btnLogout.addEventListener('click', handleLogout);
+    formRegistro.addEventListener('submit', agregarRegistro);
+    buscarInput.addEventListener('input', buscarRegistros);
+    exportarExcelBtn.addEventListener('click', exportarAExcel);
+    formEdicion.addEventListener('submit', guardarEdicion);
+    closeModal.addEventListener('click', cerrarModal);
+
+    // Funciones
+    function handleLogin(e) {
+      e.preventDefault();
+      const usuario = document.getElementById('usuario').value;
+      const clave = document.getElementById('clave').value;
+
+      if (usuario === CREDENCIALES.usuario && clave === CREDENCIALES.clave) {
+        videoFondo.style.display = 'none';
+        localStorage.setItem('isLoggedIn', 'true');
+        loginContainer.style.display = 'none';
+        appContainer.style.display = 'block';
+        actualizarEstadisticas();
+        renderizarRegistros();
+        sincronizarRegistros();
+      } else {
+        errorLogin.textContent = 'Usuario o contraseña incorrectos';
+      }
+    }
+
+    function handleLogout() {
+      videoFondo.style.display = 'block';
+      localStorage.removeItem('isLoggedIn');
+      loginContainer.style.display = 'flex';
+      appContainer.style.display = 'none';
+      document.getElementById('usuario').value = '';
+      document.getElementById('clave').value = '';
+      errorLogin.textContent = '';
+    }
+
+    function cambiarSeccion(seccion) {
+      if (seccion === currentSection) return;
+
+      if (seccion === 'registrar') {
+        registrarSection.style.display = 'block';
+        buscarSection.style.display = 'none';
+        currentSection = 'registrar';
+      } else if (seccion === 'buscar') {
+        registrarSection.style.display = 'none';
+        buscarSection.style.display = 'block';
+        buscarRegistros();
+        currentSection = 'buscar';
+      }
+    }
+
+    function agregarRegistro(e) {
+      e.preventDefault();
+      
+      const nuevoRegistro = {
+        id: Date.now().toString(),
+        tipo: document.getElementById('tipo').value,
+        placa: document.getElementById('placa').value,
+        marca: document.getElementById('marca').value,
+        serial: document.getElementById('serial').value,
+        fecha: document.getElementById('fecha').value,
+        tecnico: document.getElementById('tecnico').value,
+        tipoMantenimiento: document.getElementById('tipo-mantenimiento').value,
+        estado: document.getElementById('estado').value,
+        ubicacion: document.getElementById('ubicacion').value,
+        centroCosto: document.getElementById('centro-costo').value,
+        urlTicket: document.getElementById('url-ticket').value,
+        observaciones: document.getElementById('observaciones').value,
+        fechaRegistro: new Date().toISOString(),
+        usuarioRegistro: document.getElementById('usuario').value || 'tecnico'
+      };
+
+      registros.unshift(nuevoRegistro);
+      guardarRegistros();
+      sincronizarRegistros();
+      formRegistro.reset();
+      document.getElementById('fecha').value = new Date().toISOString().split('T')[0];
+      renderizarRegistros();
+      actualizarEstadisticas();
+    }
+
+    function sincronizarRegistros() {
+      const registrosGuardados = JSON.parse(localStorage.getItem('registros_mantenimiento')) || [];
+      
+      // Combinar registros locales con los guardados
+      const todosRegistros = [...registros, ...registrosGuardados];
+      
+      // Eliminar duplicados
+      const registrosUnicos = [];
+      const idsVistos = new Set();
+      
+      for (const registro of todosRegistros) {
+        if (!idsVistos.has(registro.id)) {
+          idsVistos.add(registro.id);
+          registrosUnicos.push(registro);
+        }
+      }
+      
+      // Ordenar por fecha más reciente primero
+      registrosUnicos.sort((a, b) => new Date(b.fechaRegistro) - new Date(a.fechaRegistro));
+      
+      // Actualizar solo si hay cambios
+      if (JSON.stringify(registros) !== JSON.stringify(registrosUnicos)) {
+        registros = registrosUnicos;
+        guardarRegistros();
+        
+        if (currentSection === 'registrar') {
+          renderizarRegistros();
+        } else {
+          buscarRegistros();
+        }
+        
+        actualizarEstadisticas();
+      }
+    }
+
+    function renderizarRegistros() {
+      listaRegistros.innerHTML = '';
+      
+      if (registros.length === 0) {
+        listaRegistros.innerHTML = '<p style="text-align: center; color: #666;">No hay registros de mantenimiento</p>';
+        return;
+      }
+
+      registros.forEach((registro) => {
+        const li = document.createElement('li');
+        li.className = 'registro-item';
+        
+        let statusClass = '';
+        if (registro.estado === 'Pendiente') statusClass = 'status-pendiente';
+        if (registro.estado === 'En progreso') statusClass = 'status-progreso';
+        if (registro.estado === 'Finalizado') statusClass = 'status-finalizado';
+
+        li.innerHTML = `
+          <div class="registro-header">
+            <div class="registro-title">${registro.tipo} - ${registro.placa}</div>
+            <div class="registro-actions">
+              <span class="status-badge ${statusClass}">${registro.estado}</span>
+              <button class="edit-btn" data-id="${registro.id}">Editar</button>
+              <button class="delete-btn" data-id="${registro.id}">Eliminar</button>
+            </div>
+          </div>
+          <div class="registro-details">
+            <div class="detail-item">
+              <div class="detail-label">Tipo de Equipo</div>
+              <div class="detail-value">${registro.tipo}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Marca/Modelo</div>
+              <div class="detail-value">${registro.marca}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Serial</div>
+              <div class="detail-value">${registro.serial}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Fecha</div>
+              <div class="detail-value">${formatDate(registro.fecha)}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Placa/Identificacion</div>
+              <div class="detail-value">${registro.placa}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Técnico</div>
+              <div class="detail-value">${registro.tecnico}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Tipo Mant.</div>
+              <div class="detail-value">${registro.tipoMantenimiento}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Ubicación</div>
+              <div class="detail-value">${registro.ubicacion}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Centro Costo</div>
+              <div class="detail-value">${registro.centroCosto}</div>
+            </div>
+            ${registro.urlTicket ? `
+            <div class="detail-item">
+              <div class="detail-label">Ticket</div>
+              <div class="detail-value"><a href="${registro.urlTicket}" target="_blank">Ver ticket</a></div>
+            </div>` : ''}
+            <div class="detail-item">
+              <div class="detail-label">Registrado por</div>
+              <div class="detail-value">${registro.usuarioRegistro || 'Sistema'}</div>
+            </div>
+          </div>
+          ${registro.observaciones ? `
+          <div class="detail-item" style="margin-top: 1rem;">
+            <div class="detail-label">Observaciones</div>
+            <div class="detail-value">${registro.observaciones}</div>
+          </div>` : ''}
+        `;
+        
+        listaRegistros.appendChild(li);
+      });
+
+      // Agregar event listeners a los botones de editar y eliminar
+      document.querySelectorAll('.edit-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const id = e.target.getAttribute('data-id');
+          editarRegistro(id);
+        });
+      });
+
+      document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const id = e.target.getAttribute('data-id');
+          eliminarRegistro(id);
+        });
+      });
+    }
+
+    function buscarRegistros() {
+      const termino = buscarInput.value.toLowerCase();
+      const desde = document.getElementById('filtro-desde').value;
+      const hasta = document.getElementById('filtro-hasta').value;
+      
+      resultadosBusqueda.innerHTML = '';
+      
+      let resultados = registros.filter(registro => {
+        const coincideTexto = 
+          registro.placa.toLowerCase().includes(termino) || 
+          registro.serial.toLowerCase().includes(termino) || 
+          registro.tecnico.toLowerCase().includes(termino) ||
+          (registro.usuarioRegistro && registro.usuarioRegistro.toLowerCase().includes(termino));
+        
+        const fechaRegistro = new Date(registro.fecha);
+        const fechaDesde = new Date(desde);
+        const fechaHasta = new Date(hasta);
+        
+        fechaHasta.setDate(fechaHasta.getDate() + 1); // Incluir el día completo
+        
+        const coincideFecha = fechaRegistro >= fechaDesde && fechaRegistro <= fechaHasta;
+        
+        return coincideTexto && coincideFecha;
+      });
+      
+      if (resultados.length === 0) {
+        resultadosBusqueda.innerHTML = '<p style="text-align: center; color: #666;">No se encontraron resultados</p>';
+        return;
+      }
+      
+      resultados.forEach(registro => {
+        const li = document.createElement('li');
+        li.className = 'registro-item';
+        
+        let statusClass = '';
+        if (registro.estado === 'Pendiente') statusClass = 'status-pendiente';
+        if (registro.estado === 'En progreso') statusClass = 'status-progreso';
+        if (registro.estado === 'Finalizado') statusClass = 'status-finalizado';
+
+        li.innerHTML = `
+          <div class="registro-header">
+            <div class="registro-title">${registro.tipo} - ${registro.placa}</div>
+            <div class="registro-actions">
+              <span class="status-badge ${statusClass}">${registro.estado}</span>
+              <button class="edit-btn" data-id="${registro.id}">Editar</button>
+              <button class="delete-btn" data-id="${registro.id}">Eliminar</button>
+            </div>
+          </div>
+          <div class="registro-details">
+            <div class="detail-item">
+              <div class="detail-label">Tipo de Equipo</div>
+              <div class="detail-value">${registro.tipodeequipo}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Marca/Modelo</div>
+              <div class="detail-value">${registro.marca}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Placa/Identificacion</div>
+              <div class="detail-value">${registro.placa}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Serial</div>
+              <div class="detail-value">${registro.serial}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Fecha</div>
+              <div class="detail-value">${formatDate(registro.fecha)}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Técnico</div>
+              <div class="detail-value">${registro.tecnico}</div>
+             </div> 
+        <div class="detail-item">
+          <div class="detail-label">Ubicación</div>
+          <div class="detail-value">${registro.ubicacion}</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Centro de Costo</div>
+          <div class="detail-value">${registro.centroCosto}</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Observaciones</div>
+          <div class="detail-value">${registro.observaciones || ''}</div>
+        </div>
+            <div class="detail-item">
+              <div class="detail-label">Registrado por</div>
+              <div class="detail-value">${registro.usuarioRegistro || 'Sistema'}</div>
+            </div>
+          </div>
+        `;
+        
+        resultadosBusqueda.appendChild(li);
+      });
+
+      // Agregar event listeners a los botones de editar
+       document.querySelectorAll('.edit-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const id = e.target.getAttribute('data-id');
+          editarRegistro(id);
+        });
+      });
+
+      document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const id = e.target.getAttribute('data-id');
+          eliminarRegistro(id);
+        });
+      });
+    }
+
+    function editarRegistro(id) {
+      const registro = registros.find(r => r.id === id);
+      if (!registro) return;
+      
+      document.getElementById('edit-tipo').value = registro.tipo;
+      document.getElementById('edit-placa').value = registro.placa;
+      document.getElementById('edit-marca').value = registro.marca;
+      document.getElementById('edit-serial').value = registro.serial;
+      document.getElementById('edit-fecha').value = registro.fecha;
+      document.getElementById('edit-tecnico').value = registro.tecnico;
+      document.getElementById('edit-tipo-mantenimiento').value = registro.tipoMantenimiento;
+      document.getElementById('edit-estado').value = registro.estado;
+      document.getElementById('edit-ubicacion').value = registro.ubicacion;
+      document.getElementById('edit-centro-costo').value = registro.centroCosto;
+      document.getElementById('edit-url-ticket').value = registro.urlTicket || '';
+      document.getElementById('edit-observaciones').value = registro.observaciones || '';
+      document.getElementById('edit-indice').value = registros.findIndex(r => r.id === id);
+      
+      modalEdicion.classList.add('active');
+    }
+
+    function guardarEdicion(e) {
+      e.preventDefault();
+      
+      const indice = document.getElementById('edit-indice').value;
+      if (indice === '' || indice < 0 || indice >= registros.length) return;
+      
+      registros[indice] = {
+        ...registros[indice],
+        tipo: document.getElementById('edit-tipo').value,
+        placa: document.getElementById('edit-placa').value,
+        marca: document.getElementById('edit-marca').value,
+        serial: document.getElementById('edit-serial').value,
+        fecha: document.getElementById('edit-fecha').value,
+        tecnico: document.getElementById('edit-tecnico').value,
+        tipoMantenimiento: document.getElementById('edit-tipo-mantenimiento').value,
+        estado: document.getElementById('edit-estado').value,
+        ubicacion: document.getElementById('edit-ubicacion').value,
+        centroCosto: document.getElementById('edit-centro-costo').value,
+        urlTicket: document.getElementById('edit-url-ticket').value,
+        observaciones: document.getElementById('edit-observaciones').value
+      };
+      
+      guardarRegistros();
+      sincronizarRegistros();
+      cerrarModal();
+      
+      if (currentSection === 'registrar') {
+        renderizarRegistros();
+      } else {
+        buscarRegistros();
+      }
+      
+      actualizarEstadisticas();
+    }
+
+    function eliminarRegistro(id) {
+      if (confirm('¿Está seguro de eliminar este registro?')) {
+        registros = registros.filter(registro => registro.id !== id);
+        guardarRegistros();
+        sincronizarRegistros();
+        renderizarRegistros();
+        actualizarEstadisticas();
+      }
+    }
+
+    function cerrarModal() {
+      modalEdicion.classList.remove('active');
+    }
+
+    function actualizarEstadisticas() {
+      totalElement.textContent = registros.length;
+      pendientesElement.textContent = registros.filter(r => r.estado === 'Pendiente').length;
+      enProgresoElement.textContent = registros.filter(r => r.estado === 'En progreso').length;
+      finalizadosElement.textContent = registros.filter(r => r.estado === 'Finalizado').length;
+    }
+
+    function guardarRegistros() {
+      localStorage.setItem('registros_mantenimiento', JSON.stringify(registros));
+    }
+
+    function formatDate(dateString) {
+      const options = { year: 'numeric', month: 'short', day: 'numeric' };
+      return new Date(dateString).toLocaleDateString('es-ES', options);
+    }
+
+    
+function exportarAExcel() {
+  const resultados = document.querySelectorAll('#resultados .registro-item');
+  if (resultados.length === 0) {
+    alert('No hay resultados de búsqueda para exportar.');
+    return;
+  }
+
+  const datosExportar = [];
+
+  resultados.forEach(item => {
+    const tipoPlaca = item.querySelector('.registro-title').textContent.split(' - ');
+    const tipo = tipoPlaca[0] || '';
+    const placa = tipoPlaca[1] || '';
+
+    const detalles = item.querySelectorAll('.detail-value');
+    const marca = detalles[0]?.textContent || '';
+    const serial = detalles[1]?.textContent || '';
+    const fecha = detalles[2]?.textContent || '';
+    const tecnico = detalles[3]?.textContent || '';
+    const registradoPor = detalles[4]?.textContent || '';
+    const ubicacion = detalles[0]?.textContent || '';
+    const centroCosto = detalles[6]?.textContent || '';
+    const observaciones = detalles[7]?.textContent || '';
+    const estado = item.querySelector('.status-badge')?.textContent || '';
+
+    datosExportar.push({
+      'Tipo de Equipo': tipo,
+      'Placa': placa,
+      'Marca/Modelo': marca,
+      'Serial': serial,
+      'Fecha': fecha,
+      'Técnico': tecnico,
+      'Estado': estado,
+      'Ubicación': ubicacion,
+      'Centro de Costo': centroCosto,
+      'Observaciones': observaciones,
+      'Registrado por': registradoPor
+    });
+  });
+
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.json_to_sheet(datosExportar);
+  XLSX.utils.book_append_sheet(wb, ws, 'ResultadosBusqueda');
+
+  const fechaActual = new Date().toISOString().split('T')[0];
+  XLSX.writeFile(wb, `resultados_busqueda_${fechaActual}.xlsx`);
+}
+
+
+    // Manejar clic fuera del modal para cerrarlo
+    window.addEventListener('click', (e) => {
+      if (e.target === modalEdicion) {
+        cerrarModal();
+      }
+    });
+  </script>
+</body>
+</html>
